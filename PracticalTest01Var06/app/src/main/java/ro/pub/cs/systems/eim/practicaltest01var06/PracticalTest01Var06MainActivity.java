@@ -5,9 +5,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -29,6 +34,7 @@ public class PracticalTest01Var06MainActivity extends AppCompatActivity {
     EditText text2;
     Intent intent;
     Integer score;
+    Intent intent2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,17 @@ public class PracticalTest01Var06MainActivity extends AppCompatActivity {
         score = 0;
 
         intent = new Intent(this, PracticalTest01Var06SecondaryActivity.class);
+
+        intent2 = new Intent();
+        ComponentName componentName = new ComponentName(getApplicationContext(), PracticalTest01Var06Service.class);
+        intent2.setComponent(componentName);
+
+        Listener listener = new Listener();
+        IntentFilter intfil = new IntentFilter();
+        intfil.addAction("DATA_ACTION");
+        intfil.addAction("GEOMETRIC_ACTION");
+        intfil.addAction("ARITHMETIC_ACTION");
+        registerReceiver(listener, intfil);
     }
 
     @Override
@@ -125,7 +142,25 @@ public class PracticalTest01Var06MainActivity extends AppCompatActivity {
                 intent.putExtra("3", "*");
                 intent.putExtra("count", count);
                 startActivityForResult(intent, 2005);
+
+                if (score > 0) {
+                    startService(intent2);
+                }
             }
         }
+    }
+
+    public static class Listener extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        stopService(intent2);
+        super.onDestroy();
     }
 }
